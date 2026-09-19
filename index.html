@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="enhancements.css" />
   </head>
@@ -33,9 +34,9 @@
       <section id="uploadState" class="upload-screen" aria-label="CSV upload area">
         <div class="upload-orb">↥</div>
         <h2>Drop a CSV to begin</h2>
-        <p>Get statistics, missing-value analysis, charts and correlations automatically.</p>
-        <div class="upload-actions"><label class="button primary" for="fileInput">Choose a CSV file</label><button id="sampleButton" class="button secondary" type="button">Try sample data</button></div>
-        <input id="fileInput" type="file" accept=".csv,text/csv" hidden />
+        <p>Upload a CSV or Excel file for automatic statistics, charts and correlations.</p>
+        <div class="upload-actions"><label class="button primary" for="fileInput">Choose a data file</label><button id="sampleButton" class="button secondary" type="button">Try sample data</button></div>
+        <input id="fileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden />
         <p class="tiny">Your file stays on this device. Nothing is uploaded.</p>
       </section>
 
