@@ -1,3 +1,5 @@
 .upload-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .upload-screen.drag-active{border-color:var(--purple);background:radial-gradient(circle at 50% 20%,#2d2751 0,transparent 42%),var(--panel)}
 .chart-hint{margin:-8px 0 14px;font-size:12px}
+.saved-dashboard{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 28px;padding:11px 14px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--muted);font-size:12px}
+.saved-dashboard .button{padding:7px 10px;font-size:12px}
