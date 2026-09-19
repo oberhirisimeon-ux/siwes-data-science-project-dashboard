@@ -1,0 +1,2 @@
+.upload-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.upload-screen.drag-active{border-color:var(--purple);background:radial-gradient(circle at 50% 20%,#2d2751 0,transparent 42%),var(--panel)}

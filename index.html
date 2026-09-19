@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIWES Data Science Project Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="enhancements.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="#top"><span class="brand-mark">◈</span> SIWES Data</a>
+      <nav>
+        <a class="nav-item active" href="#overview">Overview</a>
+        <a class="nav-item" href="#quality">Data quality</a>
+        <a class="nav-item" href="#explore">Explore charts</a>
+        <a class="nav-item" href="#correlation">Correlations</a>
+        <a class="nav-item" href="#preview">Data preview</a>
+      </nav>
+      <div class="sidebar-note"><span></span> Data is analysed locally in your browser.</div>
+    </aside>
+
+    <main id="top">
+      <header class="topbar">
+        <div><p class="eyebrow">SIWES DATA SCIENCE PROJECT</p><h1>Dashboard intelligence</h1></div>
+        <button id="replaceFile" class="button secondary">Upload CSV</button>
+      </header>
+
+      <section id="uploadState" class="upload-screen" aria-label="CSV upload area">
+        <div class="upload-orb">↥</div>
+        <h2>Drop a CSV to begin</h2>
+        <p>Get statistics, missing-value analysis, charts and correlations automatically.</p>
+        <div class="upload-actions"><label class="button primary" for="fileInput">Choose a CSV file</label><button id="sampleButton" class="button secondary" type="button">Try sample data</button></div>
+        <input id="fileInput" type="file" accept=".csv,text/csv" hidden />
+        <p class="tiny">Your file stays on this device. Nothing is uploaded.</p>
+      </section>
+
+      <div id="dashboard" hidden>
+        <section id="overview" class="section-head">
+          <div><p class="eyebrow">OVERVIEW</p><h2 id="datasetName">Dataset summary</h2></div>
+          <p id="loadInfo" class="subtle"></p>
+        </section>
+        <section class="metric-grid">
+          <article class="metric-card"><p>Records</p><strong id="recordCount">—</strong><span>Rows in this dataset</span></article>
+          <article class="metric-card"><p>Columns</p><strong id="columnCount">—</strong><span>Fields detected</span></article>
+          <article class="metric-card"><p>Missing cells</p><strong id="missingCount">—</strong><span id="missingRate">—</span></article>
+          <article class="metric-card accent"><p>Completeness</p><strong id="completeness">—</strong><span>Non-empty cells</span></article>
+        </section>
+
+        <section id="quality" class="section-head compact"><div><p class="eyebrow">DATA QUALITY</p><h2>Column health</h2></div></section>
+        <section class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Column</th><th>Type</th><th class="right">Missing</th><th>Completeness</th></tr></thead><tbody id="qualityBody"></tbody></table></div></section>
+
+        <section class="two-column">
+          <div class="panel"><div class="panel-title"><div><p class="eyebrow">NUMERIC FIELDS</p><h2>Summary statistics</h2></div></div><div class="table-wrap"><table><thead><tr><th>Column</th><th class="right">Average</th><th class="right">Minimum</th><th class="right">Maximum</th></tr></thead><tbody id="statsBody"></tbody></table></div></div>
+          <div id="explore" class="panel chart-panel"><div class="panel-title"><div><p class="eyebrow">EXPLORE</p><h2>Interactive chart</h2></div></div><div class="chart-controls"><label>Chart type<select id="chartType"><option value="bar">Bar chart</option><option value="doughnut">Donut chart</option></select></label><label>Category<select id="categoryColumn"></select></label><label>Value<select id="valueColumn"></select></label></div><div class="chart-shell"><canvas id="mainChart" aria-label="Interactive dataset chart"></canvas></div></div>
+        </section>
+
+        <section id="correlation" class="section-head compact"><div><p class="eyebrow">RELATIONSHIPS</p><h2>Correlation analysis</h2></div><p class="subtle">Pearson correlation for numeric columns. Closer to ±1 means a stronger relationship.</p></section>
+        <section class="panel"><div id="correlationContent" class="correlation-wrap"></div></section>
+
+        <section id="preview" class="section-head compact"><div><p class="eyebrow">RAW DATA</p><h2>Filter and preview</h2></div><button id="downloadButton" class="button secondary">Download filtered CSV</button></section>
+        <section class="panel table-panel"><div id="filterControls" class="filters"></div><p id="filterResult" class="subtle filter-result"></p><div class="table-wrap"><table><thead id="previewHead"></thead><tbody id="previewBody"></tbody></table></div></section>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
