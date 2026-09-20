@@ -4,3 +4,4 @@
 .saved-dashboard{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 28px;padding:11px 14px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--muted);font-size:12px}
 .saved-dashboard .button{padding:7px 10px;font-size:12px}
 .sheet-picker{display:flex;align-items:center;gap:12px;margin:-16px 0 28px;color:var(--muted);font:12px 'DM Mono',monospace}.sheet-picker select{min-width:180px}
+.report-actions{display:flex;gap:10px;flex-wrap:wrap}

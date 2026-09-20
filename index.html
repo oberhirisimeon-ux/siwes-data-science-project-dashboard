@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@latest/dist/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="enhancements.css" />
   </head>
@@ -65,7 +67,7 @@
         <section id="correlation" class="section-head compact"><div><p class="eyebrow">RELATIONSHIPS</p><h2>Correlation analysis</h2></div><p class="subtle">Pearson correlation for numeric columns. Closer to ±1 means a stronger relationship.</p></section>
         <section class="panel"><div id="correlationContent" class="correlation-wrap"></div></section>
 
-        <section id="preview" class="section-head compact"><div><p class="eyebrow">RAW DATA</p><h2>Filter and preview</h2></div><button id="downloadButton" class="button secondary">Download filtered CSV</button></section>
+        <section id="preview" class="section-head compact"><div><p class="eyebrow">RAW DATA</p><h2>Filter and preview</h2></div><div class="report-actions"><button id="pdfReportButton" class="button primary">Download PDF report</button><button id="downloadButton" class="button secondary">Download filtered CSV</button></div></section>
         <section class="panel table-panel"><div id="filterControls" class="filters"></div><p id="filterResult" class="subtle filter-result"></p><div class="table-wrap"><table><thead id="previewHead"></thead><tbody id="previewBody"></tbody></table></div></section>
       </div>
     </main>
