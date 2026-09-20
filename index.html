@@ -11,6 +11,8 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/jspdf-autotable@latest/dist/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="enhancements.css" />
   </head>
@@ -30,8 +32,10 @@
     <main id="top">
       <header class="topbar">
         <div><p id="organizationLabel" class="eyebrow">SIWES DATA SCIENCE PROJECT</p><h1 id="dashboardTitle">Dashboard intelligence</h1></div>
-        <button id="replaceFile" class="button secondary">Upload CSV</button>
+        <div class="header-actions"><span id="authSummary" class="subtle">Not signed in</span><button id="replaceFile" class="button secondary">Upload CSV</button></div>
       </header>
+
+      <section class="panel auth-panel"><div class="auth-copy"><p class="eyebrow">CLOUD WORKSPACE</p><h2>Sign in to save dashboards online</h2><p id="authStatus" class="subtle">Your dashboard is currently stored only in this browser.</p></div><div id="authForms" class="auth-controls"><input id="authEmail" type="email" placeholder="Email address" autocomplete="email" /><input id="authPassword" type="password" placeholder="Password (6+ characters)" autocomplete="current-password" /><button id="signInButton" class="button secondary" type="button">Sign in</button><button id="signUpButton" class="button primary" type="button">Create account</button></div><button id="signOutButton" class="button secondary" type="button" hidden>Sign out</button></section>
 
       <section id="uploadState" class="upload-screen" aria-label="CSV upload area">
         <div class="upload-orb">↥</div>
