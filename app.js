@@ -3,6 +3,8 @@ const $ = id => document.getElementById(id);
 const empty = v => v === undefined || v === null || String(v).trim() === '';
 const number = v => { const n = Number(String(v).replace(/,/g, '')); return Number.isFinite(n) ? n : null; };
 const format = n => new Intl.NumberFormat(undefined,{maximumFractionDigits:2}).format(n);
+const toDate = v => {if(v instanceof Date&&!Number.isNaN(v))return v;const text=String(v).trim();if(!text||/^\d+$/.test(text))return null;const d=new Date(text);return Number.isNaN(d.getTime())?null:d;};
+function isDateColumn(values){const present=values.filter(v=>!empty(v));return present.length>=2&&present.filter(v=>toDate(v)!==null).length/present.length>=.8;}
 
 function parseCSV(text) {
   const rows = []; let row = [], cell = '', quoted = false;
@@ -28,7 +30,7 @@ function render() {
   $('qualityBody').innerHTML = state.columns.map(c => { const m = state.rows.filter(r => empty(r[c])).length, good = state.rows.length ? 100 - m / state.rows.length * 100 : 0; return `<tr><td>${escapeHTML(c)}</td><td><span class="type-pill">${infer(state.rows.map(r=>r[c]))}</span></td><td class="right">${format(m)} <span class="subtle">(${state.rows.length ? (m/state.rows.length*100).toFixed(1):0}%)</span></td><td><span class="progress"><i style="width:${good}%"></i></span><span class="subtle">${good.toFixed(1)}%</span></td></tr>`; }).join('');
   const numeric = state.columns.filter(c => infer(state.rows.map(r => r[c])) === 'Number');
   $('statsBody').innerHTML = numeric.length ? numeric.map(c => { const v=numericValues(c), avg=v.reduce((a,b)=>a+b,0)/v.length; return `<tr><td>${escapeHTML(c)}</td><td class="right">${format(avg)}</td><td class="right">${format(Math.min(...v))}</td><td class="right">${format(Math.max(...v))}</td></tr>`; }).join('') : '<tr><td colspan="4" class="empty">No numeric columns were detected.</td></tr>';
-  setupChartOptions(numeric); renderValidation(); renderCorrelation(numeric); renderInsights(numeric); renderCleaningControls(numeric); renderDictionary(); renderFilters(); renderPreview();
+  setupChartOptions(numeric); setupTimeControls(); renderValidation(); renderCorrelation(numeric); renderInsights(numeric); renderCleaningControls(numeric); renderDictionary(); renderFilters(); renderPreview();
 }
 function setupChartOptions(numeric) {
   const category = $('categoryColumn'), value = $('valueColumn'); const oldC=category.value, oldV=value.value;
@@ -36,12 +38,15 @@ function setupChartOptions(numeric) {
   value.innerHTML = numeric.map(c=>`<option value="${escapeAttr(c)}">${escapeHTML(c)}</option>`).join('') || '<option value="">Count of records</option>';
   category.value = state.columns.includes(oldC) ? oldC : state.columns[0]; value.value = numeric.includes(oldV) ? oldV : (numeric[0] || ''); renderChart();
 }
+function setupTimeControls(){const dates=state.columns.filter(c=>isDateColumn(state.rows.map(r=>r[c]))),select=$('timeColumn'),old=select.value;select.innerHTML='<option value="">No time trend</option>'+dates.map(c=>`<option value="${escapeAttr(c)}">${escapeHTML(c)}</option>`).join('');select.value=dates.includes(old)?old:'';$('timeControls').hidden=!dates.length;}
 function renderChart() {
   if (!state.rows.length || !window.Chart) return;
-  const c=$('categoryColumn').value,v=$('valueColumn').value,type=$('chartType').value,aggregation=$('aggregation').value,rows=filteredRows();
+  const c=$('categoryColumn').value,v=$('valueColumn').value,type=$('chartType').value,aggregation=$('aggregation').value,rows=filteredRows(),timeColumn=$('timeColumn').value,granularity=$('timeGranularity').value;
   const aggregate=values=>{const nums=values.filter(x=>x!==null);if(aggregation==='count')return values.length;if(!nums.length)return 0;if(aggregation==='sum')return nums.reduce((a,b)=>a+b,0);if(aggregation==='average')return nums.reduce((a,b)=>a+b,0)/nums.length;if(aggregation==='min')return Math.min(...nums);return Math.max(...nums);};
   let config, hint='';
-  if(type==='scatter'){
+  if(timeColumn){
+    const groups={};rows.forEach(r=>{const date=toDate(r[timeColumn]);if(!date)return;const year=date.getFullYear(),month=String(date.getMonth()+1).padStart(2,'0'),day=String(date.getDate()).padStart(2,'0');const key=granularity==='year'?`${year}`:granularity==='quarter'?`${year} Q${Math.floor(date.getMonth()/3)+1}`:granularity==='month'?`${year}-${month}`:`${year}-${month}-${day}`;(groups[key]??=[]).push(number(r[v]));});const entries=Object.entries(groups).map(([label,values])=>[label,aggregate(values)]).sort((a,b)=>a[0].localeCompare(b[0]));const chartType=type==='doughnut'||type==='histogram'||type==='scatter'?'line':type;hint=`Time trend: ${aggregation} of ${v||'records'} by ${granularity}, using ${timeColumn}.`;config={type:chartType,data:{labels:entries.map(x=>x[0]),datasets:[{label:`${aggregation} of ${v||'records'}`,data:entries.map(x=>x[1]),backgroundColor:'#9b8cff',borderColor:'#4ce2c1',borderWidth:chartType==='line'?2:0,borderRadius:chartType==='bar'?5:0,fill:false,tension:.3}]},options:chartOptions(false)};
+  } else if(type==='scatter'){
     const points=rows.map(r=>({x:number(r[c]),y:number(r[v])})).filter(p=>p.x!==null&&p.y!==null).slice(0,500);
     hint='Scatter plots need two numeric columns: X axis and Y axis.';
     config={type:'scatter',data:{datasets:[{label:`${v} by ${c}`,data:points,backgroundColor:'#4ce2c1',pointRadius:5,pointHoverRadius:7}]},options:{...chartOptions(false),scales:{x:{title:{display:true,text:c,color:'#9399ab'},ticks:{color:'#9399ab'},grid:{color:'#292d3a'}},y:{title:{display:true,text:v,color:'#9399ab'},ticks:{color:'#9399ab'},grid:{color:'#292d3a'}}}}};
@@ -96,10 +101,13 @@ $('saveDictionary').addEventListener('click',saveDictionary);
 $('saveBranding').addEventListener('click',saveBranding);
 $('saveSnapshot').addEventListener('click',saveSnapshot);
 $('snapshotName').addEventListener('keydown',e=>{if(e.key==='Enter')saveSnapshot();});
+$('timeColumn').addEventListener('change',()=>{renderChart();saveDashboard();});
+$('timeGranularity').addEventListener('change',()=>{renderChart();saveDashboard();});
+$('clearTimeTrend').addEventListener('click',()=>{$('timeColumn').value='';renderChart();saveDashboard();});
 $('refreshInsights').addEventListener('click',()=>renderInsights(state.columns.filter(c=>infer(state.rows.map(r=>r[c]))==='Number')));
 $('pdfReportButton').addEventListener('click',exportPdfReport);
 $('uploadState').addEventListener('drop',e=>{e.preventDefault();e.stopImmediatePropagation();$('uploadState').classList.remove('drag-active');const file=[...e.dataTransfer.files].find(f=>/\.(csv|xlsx|xls)$/i.test(f.name));if(file)loadFile(file);else alert('Please drop a CSV, XLSX, or XLS file.');},true);
-function dashboardSettings(){return {chartType:$('chartType').value,categoryColumn:$('categoryColumn').value,valueColumn:$('valueColumn').value,aggregation:$('aggregation').value};}
+function dashboardSettings(){return {chartType:$('chartType').value,categoryColumn:$('categoryColumn').value,valueColumn:$('valueColumn').value,aggregation:$('aggregation').value,timeColumn:$('timeColumn').value,timeGranularity:$('timeGranularity').value};}
 function dashboardPayload(){return {columns:state.columns,rows:state.rows,fileName:state.fileName,filters:state.filters,settings:dashboardSettings(),originalColumns:state.originalColumns,originalRows:state.originalRows,dictionary:state.dictionary,branding:state.branding};}
 function getSnapshots(){try{return JSON.parse(localStorage.getItem('siwes-snapshots-v1'))||[];}catch{return [];}}
 function renderSnapshots(){const snapshots=getSnapshots();$('snapshotList').innerHTML=snapshots.length?snapshots.map(s=>`<div class="snapshot-item"><div class="snapshot-meta"><strong>${escapeHTML(s.name)}</strong><span>${escapeHTML(s.fileName||'Dataset')} - ${format(s.rows?.length||0)} rows - ${new Date(s.savedAt).toLocaleString()}</span></div><div class="snapshot-actions"><button class="button secondary" data-load-snapshot="${escapeAttr(s.id)}" type="button">Restore</button><button class="button danger-button" data-delete-snapshot="${escapeAttr(s.id)}" type="button">Delete</button></div></div>`).join(''):'<p class="subtle">No saved snapshots yet.</p>';document.querySelectorAll('[data-load-snapshot]').forEach(b=>b.addEventListener('click',()=>loadSnapshot(b.dataset.loadSnapshot)));document.querySelectorAll('[data-delete-snapshot]').forEach(b=>b.addEventListener('click',()=>deleteSnapshot(b.dataset.deleteSnapshot)));}
