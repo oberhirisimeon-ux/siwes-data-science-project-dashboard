@@ -117,6 +117,8 @@ $('clearTimeTrend').addEventListener('click',()=>{$('timeColumn').value='';rende
 $('downloadChart').addEventListener('click',downloadChart);
 $('createShareLink').addEventListener('click',createShareLink);
 $('copyShareLink').addEventListener('click',copyShareLink);
+$('openHelp').addEventListener('click',()=>{$('helpGuide').hidden=false;$('helpGuide').scrollIntoView({behavior:'smooth',block:'start'});});
+$('closeHelp').addEventListener('click',()=>{$('helpGuide').hidden=true;});
 $('inviteDashboardUser').addEventListener('click',inviteDashboardUser);
 document.querySelectorAll('[data-template]').forEach(button=>button.addEventListener('click',()=>applyTemplate(button.dataset.template)));
 $('signUpButton').addEventListener('click',signUp);
