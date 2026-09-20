@@ -6,3 +6,4 @@
 .sheet-picker{display:flex;align-items:center;gap:12px;margin:-16px 0 28px;color:var(--muted);font:12px 'DM Mono',monospace}.sheet-picker select{min-width:180px}
 .report-actions{display:flex;gap:10px;flex-wrap:wrap}
 .cleaning-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.cleaning-controls label{display:grid;gap:6px;color:var(--muted);font:11px 'DM Mono',monospace}.cleaning-status{margin:18px 0 0}.danger-button{border-color:#713040;color:#ff8a9d}.danger-button:hover{border-color:#ff6d85}
+.dictionary-table input{min-width:130px;width:100%;padding:7px 8px;font-size:12px}.dictionary-table td{vertical-align:top}.dictionary-status{padding:0 20px 16px}
