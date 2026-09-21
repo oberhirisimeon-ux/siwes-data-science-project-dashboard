@@ -117,6 +117,8 @@ $('clearTimeTrend').addEventListener('click',()=>{$('timeColumn').value='';rende
 $('downloadChart').addEventListener('click',downloadChart);
 $('createShareLink').addEventListener('click',createShareLink);
 $('copyShareLink').addEventListener('click',copyShareLink);
+$('openWorkspace').addEventListener('click',openWorkspace);
+$('openWorkspaceTop').addEventListener('click',openWorkspace);
 $('openHelp').addEventListener('click',()=>{$('helpGuide').hidden=false;$('helpGuide').scrollIntoView({behavior:'smooth',block:'start'});});
 $('closeHelp').addEventListener('click',()=>{$('helpGuide').hidden=true;});
 $('inviteDashboardUser').addEventListener('click',inviteDashboardUser);
@@ -164,6 +166,7 @@ restoreSavedDashboard();
 renderSnapshots();
 renderSharedDashboards();
 bootstrapCloud();
+function openWorkspace(){document.body.classList.add('workspace-open');$('landingPage').hidden=true;$('top').hidden=false;window.scrollTo({top:0,behavior:'smooth'});}
 function loadExcelSheet(sheetName){if(!state.excelWorkbook)return;const raw=XLSX.utils.sheet_to_json(state.excelWorkbook.Sheets[sheetName],{header:1,defval:''});setDataset(raw,state.excelFileName,`Excel sheet: ${sheetName}`);}
 function loadFile(file){const extension=file.name.split('.').pop().toLowerCase();if(extension==='csv'){state.excelWorkbook=null;state.excelFileName='';$('excelSheetControls').hidden=true;const reader=new FileReader();reader.onload=()=>setDataset(parseCSV(reader.result),file.name);reader.readAsText(file);return;}if(!['xlsx','xls'].includes(extension)){alert('Please choose a CSV, XLSX, or XLS file.');return;}if(!window.XLSX){alert('The Excel reader did not load. Please refresh and try again.');return;}file.arrayBuffer().then(buffer=>{state.excelWorkbook=XLSX.read(buffer);state.excelFileName=file.name;const selector=$('sheetSelector');selector.innerHTML=state.excelWorkbook.SheetNames.map(name=>`<option value="${escapeAttr(name)}">${escapeHTML(name)}</option>`).join('');$('excelSheetControls').hidden=false;selector.value=state.excelWorkbook.SheetNames[0];loadExcelSheet(selector.value);}).catch(()=>alert('This Excel file could not be read. Please try another file.'));}
 function loadSample(){const raw=parseCSV(`Student ID,Department,Hours Studied,Attendance,Assessment Score,Project Score,Final Score\nSIWES-001,Data Science,18,92,78,88,83\nSIWES-002,Data Science,25,97,89,94,91\nSIWES-003,Computer Science,12,76,61,72,66\nSIWES-004,Data Science,22,90,83,91,87\nSIWES-005,Statistics,15,84,70,75,73\nSIWES-006,Computer Science,28,99,95,97,96\nSIWES-007,Statistics,10,68,55,,60\nSIWES-008,Data Science,20,93,81,86,84\nSIWES-009,Computer Science,16,82,67,79,72\nSIWES-010,Statistics,24,95,90,89,91`);state.columns=raw[0];state.rows=raw.slice(1).map(r=>Object.fromEntries(state.columns.map((c,i)=>[c,r[i]||''])));state.fileName='siwes-sample-data.csv';state.filters={};$('uploadState').hidden=true;$('dashboard').hidden=false;$('datasetName').textContent='SIWES sample data';$('loadInfo').textContent=`${format(state.rows.length)} rows · built-in sample`;render();}
